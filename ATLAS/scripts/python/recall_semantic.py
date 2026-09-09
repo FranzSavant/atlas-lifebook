@@ -6,9 +6,10 @@ Usa gemini-embedding-001 (Google, free tier, batch) con fallback automático a
 gemini-embedding-2 vía OpenRouter si Google da 429.
 
 Uso:
-  python recall_semantic.py --index                # indexar notas + sesiones
+  python recall_semantic.py --index                # incremental (solo lo que cambió)
+  python recall_semantic.py --full                 # reconstruir TODO desde cero
   python recall_semantic.py --search "pregunta" [n]# buscar (default top 5)
-  python recall_semantic.py --index --quick        # solo notas (PoC rápido)
+  python recall_semantic.py --index --quick        # solo notas (prueba rápida)
 
 Variables de entorno: GEMINI_API_KEY (y OPENROUTER_API_KEY para fallback).
 Índice guardado en ATLAS/vector/ (va al backup privado, jamás al público).
@@ -18,6 +19,7 @@ import json, math, os, re, sys, time, urllib.request, urllib.error
 VAULT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
 VECTOR_DIR = os.path.join(VAULT, "ATLAS", "vector")
 INDEX_PATH = os.path.join(VECTOR_DIR, "index.json")
+MANIFEST_PATH = os.path.join(VECTOR_DIR, "manifest.json")
 
 CHUNK_CHARS = 2000          # ~500 tokens
 OVERLAP = 200               # ~10% solape
@@ -60,6 +62,7 @@ def read_sources(quick=False):
     # sesiones .jsonl (solo Atlas principal + roles, texto de mensajes)
     sdir = os.path.join(VAULT, ".sessions")
     if os.path.isdir(sdir):
+        seen = set()
         for name in sorted(os.listdir(sdir)):
             agent_dir = os.path.join(sdir, name)
             if not os.path.isdir(agent_dir):
@@ -69,6 +72,10 @@ def read_sources(quick=False):
                     continue
                 p = os.path.join(agent_dir, fn)
                 fecha = fn.split("T")[0] if "T" in fn else fn[:10]
+                # src unico por archivo (dos archivos del mismo agente/fecha colisionan)
+                base = "Sesi" + chr(243) + "n " + name + " " + fecha
+                src = base if base not in seen else base + " [" + fn + "]"
+                seen.add(src)
                 try:
                     with open(p, encoding="utf-8", errors="ignore") as f:
                         text_parts = []
@@ -86,7 +93,7 @@ def read_sources(quick=False):
                             if t:
                                 text_parts.append(f"[{role}] {t}")
                         if text_parts:
-                            srcs.append((f"Sesión {name} {fecha}", "\n".join(text_parts)))
+                            srcs.append((src, chr(10).join(text_parts)))
                 except Exception:
                     pass
     return srcs
@@ -175,32 +182,60 @@ def embed(texts, provider=None):
 
 # ---------- index ----------
 
-def build_index(quick=False):
+def hash_text(text):
+    import hashlib
+    return hashlib.sha256(text.encode("utf-8", errors="ignore")).hexdigest()[:16]
+
+def build_index(quick=False, full=False):
     os.makedirs(VECTOR_DIR, exist_ok=True)
     srcs = read_sources(quick=quick)
     log(f"Fuentes: {len(srcs)}")
-    rows = []
+
+    # estado previo
+    old_items, old_manifest = [], {}
+    if os.path.exists(INDEX_PATH) and not full:
+        try:
+            with open(INDEX_PATH, encoding="utf-8") as f:
+                old_items = json.load(f).get("items", [])
+            with open(MANIFEST_PATH, encoding="utf-8") as f:
+                old_manifest = json.load(f)
+        except Exception:
+            old_items, old_manifest = [], {}
+
+    mode = "COMPLETO" if full or not old_items else "incremental"
+    log(f"Modo: {mode}")
+
+    new_manifest, keep_items, todo = {}, [], []
     for src, text in srcs:
-        for c in chunk_text(text):
-            rows.append({"src": src, "text": c})
-    log(f"Chunks: {len(rows)} ({'NOTAS' if quick else 'notas+sesiones'})")
-    if not rows:
+        h = hash_text(text)
+        new_manifest[src] = h
+        if not full and h == old_manifest.get(src):
+            # fuente sin cambios → conservar sus vectores tal cual
+            keep_items.extend(it for it in old_items if it["src"] == src)
+        else:
+            for c in chunk_text(text):
+                todo.append({"src": src, "text": c})
+
+    # fuentes que desaparecieron → sus items se descartan (no pasan a keep_items)
+    log(f"Chunks: {len(keep_items)} conservados + {len(todo)} a embedear")
+    if todo:
+        texts = [r["text"] for r in todo]
+        log(f"Embeddeando {len(texts)} chunks (lotes de {BATCH})...")
+        t0 = time.time()
+        vecs = embed(texts)
+        log(f"  {len(vecs)} vectores en {time.time()-t0:.0f}s")
+        for r, v in zip(todo, vecs):
+            if v:
+                keep_items.append({"src": r["src"], "text": r["text"], "v": [round(x, 6) for x in v]})
+
+    if not keep_items:
         log("Nada que indexar.")
         return
-    texts = [r["text"] for r in rows]
-    log(f"Embeddeando {len(texts)} chunks (lotes de {BATCH})...")
-    t0 = time.time()
-    vecs = embed(texts)
-    log(f"  {len(vecs)} vectores en {time.time()-t0:.0f}s")
-    if len(vecs) != len(rows):
-        log(f"  ⚠ descarte {len(rows)-len(vecs)} (textos vacíos/límites)")
-    data = []
-    for r, v in zip(rows, vecs):
-        if v:
-            data.append({"src": r["src"], "text": r["text"], "v": [round(x, 6) for x in v]})
     with open(INDEX_PATH, "w", encoding="utf-8") as f:
-        json.dump({"model": GOOGLE_MODEL, "dim": len(vecs[0]) if vecs else 0, "items": data}, f)
-    log(f"Índice guardado: {INDEX_PATH} ({len(data)} items)")
+        json.dump({"model": GOOGLE_MODEL, "dim": len(keep_items[0]["v"]), "items": keep_items}, f)
+    with open(MANIFEST_PATH, "w", encoding="utf-8") as f:
+        json.dump(new_manifest, f)
+    log(f"Índice guardado: {INDEX_PATH} ({len(keep_items)} items)")
 
 # ---------- search ----------
 
@@ -237,8 +272,8 @@ def search(query, top_n=5):
 
 if __name__ == "__main__":
     args = sys.argv[1:]
-    if args and args[0] == "--index":
-        build_index(quick=("--quick" in args))
+    if args and args[0] in ("--index", "--full"):
+        build_index(quick=("--quick" in args), full=(args[0] == "--full"))
     elif args and args[0] == "--search":
         q = args[1] if len(args) > 1 else None
         n = int(args[2]) if len(args) > 2 else 5

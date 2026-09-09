@@ -71,7 +71,8 @@ No ejecutes la verificación más de una vez por sesión.
 - `bash ATLAS/scripts/session-search.sh "texto" [agente]` → buscar solo en conversaciones pasadas
 - `bash ATLAS/scripts/recall.sh "texto"` → buscar en notas + conversaciones (grep exacto)
 - `bash ATLAS/scripts/recall-semantic.sh "frase"` → buscar por significado (semántica, principal)
-- `bash ATLAS/scripts/recall-semantic.sh --index` → (re)indexar tras clonar o al cambiar mucho el vault
+- `bash ATLAS/scripts/recall-semantic.sh --index` → incremental (solo lo que cambió, rutina)
+- `bash ATLAS/scripts/recall-semantic.sh --full` → reconstruir TODO desde cero (tras clonar, o si el índice se corrompe)
 - `bash ATLAS/scripts/item-gtd.sh "Nombre" "Parent"` → crear un elemento GTD
 
 > El índice semántico (`ATLAS/vector/`) es regenerable: no viaja en el repo.
