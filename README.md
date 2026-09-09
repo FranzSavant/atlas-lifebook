@@ -68,6 +68,8 @@ bash ATLAS/scripts/recall.sh "texto"  # buscar en notas + conversaciones
 | `ATLAS/scripts/recall.sh` | Memoria del agente: busca en notas + conversaciones (grep) |
 | `ATLAS/scripts/recall-semantic.sh` | Memoria semántica: busca por significado (`--index` incremental / `--full` completo) |
 | `ATLAS/scripts/session-search.sh` | Busca solo en conversaciones pasadas |
+| `ATLAS/scripts/sync-agents.sh` | Sincroniza roles Maestri ⇄ subagentes Pi (el más nuevo gana) |
+| `ATLAS/scripts/daily.sh` | Rutina 06:00: skills + agentes + backup GitHub |
 
 ## Licencia
 

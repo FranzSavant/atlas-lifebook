@@ -65,6 +65,34 @@ sesión, verificá si hay un respaldo configurado:
 
 No ejecutes la verificación más de una vez por sesión.
 
+
+## 5. Dualidad Maestri / Pi (vivencias paralelas)
+
+El dueño del vault usa DOS mundos para los mismos agentes, y ambos deben verse
+idénticos:
+
+- **Maestri** (lienzo): los roles viven en `.maestri/roles/<uuid>/`
+- **Pi** (Obsidian plugin o TUI): los subagentes viven en `.pi/agents/<nombre>.md`
+
+La sincronización es **bidireccional, el más nuevo gana**, y corre cada día a
+las 06:00 (rutina `daily.sh`):
+
+    bash ATLAS/scripts/sync-agents.sh    # Maestri ⇄ Pi manual
+
+Regla: edites donde edites el prompt de un agente, el otro lado se actualiza.
+Los `.md` del vault (X.md, X-Statement.md) son la fuente de verdad del CONTENIDO;
+el prompt del agente es solo la cáscara de identidad.
+
+## 6. Rutina diaria (06:00, hora de El Salvador)
+
+`ATLAS/scripts/daily.sh` (tarea programada `Atlas LifeBook Backup`):
+1. Sync skills (`ATLAS/skills` → `.pi/skills`)
+2. Sync agentes (Maestri ⇄ Pi)
+3. Backup a GitHub privado (notas + sesiones, push `atlas-backup`)
+
+Log: `ATLAS/scripts/logs/daily-YYYY-MM-DD.log`. Si la PC está apagada a las 6,
+corre apenas se encienda (StartWhenAvailable).
+
 ## 4. Atajos útiles
 
 - `bash ATLAS/scripts/backup.sh` → hacer un respaldo ahora (manual)

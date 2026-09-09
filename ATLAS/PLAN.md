@@ -113,7 +113,16 @@ ATLAS/GTD/
 - Conservados: gentle-ai.exe, Go 1.27, gentle-pi (persona el Gentleman, skills,
   orquestador), rpiv-ask-user-question, pi-btw. Skills meta usan espejo `ATLAS/skills/`.
 
-### 6.7 Próximos pasos personales (de Francisco)
+### 6.7 Dualidad Maestri ⇄ Pi (2026-09-09)
+- Los 15 agentes viven en DOS mundos idénticos: Maestri (`role.json`/AGENTS.md)
+  y Pi subagentes (`.pi/agents/*.md` — descubiertos automáticamente por Pi).
+- `sync-agents.sh`: bidireccional, EL MÁS NUEVO GANA, probado en ambas direcciones.
+- `daily.sh` (tarea 06:00 hora El Salvador): skills + agentes + backup GitHub.
+  StartWhenAvailable: si la PC está apagada, corre al encenderse.
+- El contenido de los agentes (X.md, Statement, GTD) es la misma fuente de verdad
+  en ambos mundos; solo la cáscara de prompt se sincroniza.
+
+### 6.8 Próximos pasos personales (de Francisco)
 - Completar los 12 `*-Statement.md` con sus respuestas LifeBook privadas.
 - Crear contenido GTD real en los universos.
 
