@@ -72,7 +72,7 @@ for item in "${MANIFEST[@]}"; do
   if [ -d "$item" ]; then
     # copia recursiva; elimina Statement y contenido personal dentro de GTD
     mkdir -p "$PUBLIC_DIR/$item"
-    (cd "$item" && find . -type f | grep -v -- "-Statement.md" | grep -v "/Algún día/\|/Referencia/\|/Papelera/\|/Incubar/\|/Proyectos/\|/Próximas acciones/\|/Calendario/\|/Flash/\|/Delegadas/" | while read -r f; do
+    (cd "$item" && find . -type f | grep -v -- "-Statement.md" | grep -v "/logs/" | grep -v "/Algún día/\|/Referencia/\|/Papelera/\|/Incubar/\|/Proyectos/\|/Próximas acciones/\|/Calendario/\|/Flash/\|/Delegadas/" | while read -r f; do
       mkdir -p "$PUBLIC_DIR/$item/$(dirname "$f")"
       cp "$f" "$PUBLIC_DIR/$item/$f"
     done)
