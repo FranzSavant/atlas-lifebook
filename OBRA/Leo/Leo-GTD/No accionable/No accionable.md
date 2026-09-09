@@ -19,3 +19,4 @@ FROM "OBRA/Leo/Leo-GTD/No accionable"
 WHERE file.name != "No accionable"
 SORT file.name ASC
 ```
+contiene: "[[PruebaRuta]]"

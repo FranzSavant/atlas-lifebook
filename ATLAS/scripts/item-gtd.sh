@@ -14,7 +14,8 @@ if [ -z "$NAME" ] || [ -z "$PARENT" ]; then
   exit 1
 fi
 
-VAULT="C:/Users/usuario/Desktop/Atlas"
+cd "$(dirname "$0")/../.."
+    VAULT="$(pwd)"
 FECHA=$(date +%Y-%m-%d)
 
 # 12 especialistas con su base
