@@ -17,6 +17,15 @@ LOG="$LOG_DIR/daily-$(date '+%Y-%m-%d').log"
 echo "=== Rutina diaria Atlas: $(date '+%Y-%m-%d %H:%M') ===" | tee "$LOG"
 
 echo "" >> "$LOG"
+echo "--- 1/4 Inbox (captura) ---" | tee -a "$LOG"
+if ls "$PWD"/Inbox/*.md >/dev/null 2>&1; then
+  echo "  Items pendientes en Inbox — Atlas los ruteará al iniciar sesión." | tee -a "$LOG"
+  bash ATLAS/scripts/inbox-scan.sh >> "$LOG" 2>&1 || true
+else
+  echo "  (Inbox vacío)" | tee -a "$LOG"
+fi
+
+echo "" >> "$LOG"
 echo "--- 1/3 Skills (ATLAS/skills → .pi/skills) ---" | tee -a "$LOG"
 if [ -f ATLAS/scripts/sync-skills.sh ]; then
   bash ATLAS/scripts/sync-skills.sh >> "$LOG" 2>&1 || echo "  ⚠ sync-skills falló (ver log)" | tee -a "$LOG"

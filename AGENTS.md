@@ -93,6 +93,34 @@ el prompt del agente es solo la cáscara de identidad.
 Log: `ATLAS/scripts/logs/daily-YYYY-MM-DD.log`. Si la PC está apagada a las 6,
 corre apenas se encienda (StartWhenAvailable).
 
+
+## 7. Inbox GTD — captura y ruteo (la puerta de entrada)
+
+El dueño captura SIN pensar: suelta archivos en `Inbox/` (notas rápidas,
+ideas, links, recordatorios). Vos hacés la parte inteligente:
+
+1. **Al iniciar sesión** (y cada vez que el dueño lo pida, `/inbox`), corré:
+   `bash ATLAS/scripts/inbox-scan.sh` → lista lo nuevo y sugiere el agente
+   dueño por similitud semántica (con puntajes).
+2. **Ruteá cada item**: elegí el agente con mayor puntaje. Si hay empate o
+   todos los puntajes son bajos (< 0.45), preguntale al dueño — nunca inventes.
+3. **Creá el archivo real** en el universo GTD del agente según el tipo:
+   - Tarea (<2 min) → `{G}.GTD/Accionable/Flash/`
+   - Tarea (>2 min) → `{G}.GTD/Accionable/Próximas acciones/`
+   - Proyecto multietapa → `{G}.GTD/Accionable/Proyectos/`
+   - Con fecha/hora → `{G}.GTD/Accionable/Calendario/` (fecha en `fecha:`)
+   - Información para consultar → `{G}.GTD/No accionable/Referencia/`
+   - "Algún día / quizás" → `{G}.GTD/No accionable/Algún día/`
+   - No accionable y desechable → Papelera
+   Donde `{G}` es `SER/Axel/Axel` etc. (el universo del agente elegido).
+   El archivo lleva frontmatter completo (`fecha`, `id`, `descripcion`,
+   `parent: "[[Contenedor]]"`, `contiene` si aplica) + el contenido.
+4. **Archivá el original**: movelo a `Inbox/Procesado/` con fecha en el nombre.
+   Dejalo en el Inbox solo si no pudiste procesarlo (y avisá por qué).
+
+Regla de oro: el Inbox siempre debe quedar VACÍO al final de tu ruteo (o con
+solo lo que quedó a la espera de una decisión del dueño, avisado).
+
 ## 4. Atajos útiles
 
 - `bash ATLAS/scripts/backup.sh` → hacer un respaldo ahora (manual)
@@ -102,6 +130,7 @@ corre apenas se encienda (StartWhenAvailable).
 - `bash ATLAS/scripts/recall-semantic.sh --index` → incremental (solo lo que cambió, rutina)
 - `bash ATLAS/scripts/recall-semantic.sh --full` → reconstruir TODO desde cero (tras clonar, o si el índice se corrompe)
 - `bash ATLAS/scripts/item-gtd.sh "Nombre" "Parent"` → crear un elemento GTD
+- `bash ATLAS/scripts/inbox-scan.sh` → revisar el Inbox y rutear (o `/inbox`)
 
 > El índice semántico (`ATLAS/vector/`) es regenerable: no viaja en el repo.
 > Tras clonar en una PC nueva, corre `bash ATLAS/scripts/recall-semantic.sh --index` una vez.
