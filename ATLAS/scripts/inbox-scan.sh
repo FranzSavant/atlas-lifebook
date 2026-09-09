@@ -27,7 +27,7 @@ echo ""
 
 # archivos nuevos en Inbox/
 LAST_DATE=$(cat "$LAST_SCAN")
-mapfile -t FILES < <(find "$INBOX" -maxdepth 1 -type f ! -name "INBOX.md" ! -name ".DS_Store" -newermt "$LAST_DATE" 2>/dev/null | sort)
+mapfile -t FILES < <(find "$INBOX" -maxdepth 2 -type f ! -path "*/Procesado/*" ! -name "INBOX.md" ! -name ".DS_Store" -newermt "$LAST_DATE" 2>/dev/null | sort)
 
 if [ "${#FILES[@]}" -eq 0 ]; then
   echo "Inbox vacío o sin archivos nuevos. (nada que procesar)"
@@ -35,7 +35,7 @@ else
   echo "${#FILES[@]} archivo(s) nuevo(s) en Inbox/:"
   echo ""
   for f in "${FILES[@]}"; do
-    echo "── $(basename "$f")"
+    echo "── ${f#"$INBOX"/}"
     # clasificar con la semántica existente: buscar qué dominio encaja
     # (usa la API de embeddings compartida, sin reindexar)
     python - "$f" <<'PYEOF'

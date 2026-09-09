@@ -96,8 +96,17 @@ corre apenas se encienda (StartWhenAvailable).
 
 ## 7. Inbox GTD — captura y ruteo (la puerta de entrada)
 
+El dueño captura desde cualquier lado:
+
+- **PC (Obsidian o chat)**: suelta archivos en `Inbox/` o te escribe.
+- **Celular (Telegram)**: le escribe al bot `@franz_savant_inbox_bot`. La
+  rutina de 06:00 jala los mensajes a `Inbox/Telegram/` (o manual con `/jalar`).
+  Los links se enriquecen: YouTube con título real, webs/facebook público con
+  contenido leído; si es privado/restringido queda marcado y le preguntás al
+  dueño qué es (él lo guardó, él sabe).
+
 El dueño captura SIN pensar: suelta archivos en `Inbox/` (notas rápidas,
-ideas, links, recordatorios). Vos hacés la parte inteligente:
+ideas, links, recordatorios) o le escribe al bot de Telegram. Vos hacés la parte inteligente:
 
 1. **Al iniciar sesión** (y cada vez que el dueño lo pida, `/inbox`), corré:
    `bash ATLAS/scripts/inbox-scan.sh` → lista lo nuevo y sugiere el agente
@@ -131,6 +140,7 @@ solo lo que quedó a la espera de una decisión del dueño, avisado).
 - `bash ATLAS/scripts/recall-semantic.sh --full` → reconstruir TODO desde cero (tras clonar, o si el índice se corrompe)
 - `bash ATLAS/scripts/item-gtd.sh "Nombre" "Parent"` → crear un elemento GTD
 - `bash ATLAS/scripts/inbox-scan.sh` → revisar el Inbox y rutear (o `/inbox`)
+- `bash ATLAS/scripts/telegram-pull.sh` → jalar mensajes del bot de Telegram (o `/jalar`)
 
 > El índice semántico (`ATLAS/vector/`) es regenerable: no viaja en el repo.
 > Tras clonar en una PC nueva, corre `bash ATLAS/scripts/recall-semantic.sh --index` una vez.

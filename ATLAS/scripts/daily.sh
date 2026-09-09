@@ -17,6 +17,14 @@ LOG="$LOG_DIR/daily-$(date '+%Y-%m-%d').log"
 echo "=== Rutina diaria Atlas: $(date '+%Y-%m-%d %H:%M') ===" | tee "$LOG"
 
 echo "" >> "$LOG"
+echo "--- 1/5 Telegram (bandeja movil) ---" | tee -a "$LOG"
+if [ -n "$TELEGRAM_BOT_TOKEN" ]; then
+  bash ATLAS/scripts/telegram-pull.sh --pull >> "$LOG" 2>&1 || echo "  (sin token o sin mensajes)" | tee -a "$LOG"
+else
+  echo "  (sin TELEGRAM_BOT_TOKEN)" | tee -a "$LOG"
+fi
+
+echo "" >> "$LOG"
 echo "--- 1/4 Inbox (captura) ---" | tee -a "$LOG"
 if ls "$PWD"/Inbox/*.md >/dev/null 2>&1; then
   echo "  Items pendientes en Inbox — Atlas los ruteará al iniciar sesión." | tee -a "$LOG"

@@ -122,6 +122,15 @@ ATLAS/GTD/
 - El contenido de los agentes (X.md, Statement, GTD) es la misma fuente de verdad
   en ambos mundos; solo la cáscara de prompt se sincroniza.
 
+### 6.7bis Bandeja Telegram (2026-09-09)
+- Bot `@franz_savant_inbox_bot` como inbox móvil: cualquier mensaje/link desde
+  el celular → `Inbox/Telegram/` (jala la rutina 6am o `/jalar`).
+- Links enriquecidos por el LLM: YouTube vía oEmbed, webs/FB público vía Jina
+  Reader (r.jina.ai, gratis sin key); privado detectado y consultado al dueño.
+- Guardados de Facebook = reenviar a Telegram (FB no da API para leer/borrar
+  guardados); lo procesado se borra solo del chat (deleteMessage).
+- `/jalar` manual + automático 6am; cleanup automático de procesados.
+
 ### 6.8 Próximos pasos personales (de Francisco)
 - Completar los 12 `*-Statement.md` con sus respuestas LifeBook privadas.
 - Crear contenido GTD real en los universos.
