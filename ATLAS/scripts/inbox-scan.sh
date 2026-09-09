@@ -2,15 +2,17 @@
 # inbox-scan.sh — Escanea el Inbox y clasifica cada archivo nuevo con semántica.
 #
 # El GTD real empieza en la captura: todo lo que aparece en Inbox/ sin procesar
-# es "material bruto". Este script:
-#   1. listo los archivos sin procesar (más recientes que el último scan)
-#   2. clasifica cada uno al dominio correcto (semántica: ¿Salud? ¿Finanzas?...)
-#   3. imprime el plan de ruteo: dominio + tipo sugerido
+# es "material bruto" — Y ACEPTA TODO TIPO DE ARCHIVO (.md, .txt, .pdf, .png,
+# .jpg, .docx, .csv, links .url, lo que sea). La captura no piensa en formatos.
+# Este script:
+#   1. lista los archivos nuevos (sin filtrar por extensión)
+#   2. clasifica cada uno al dominio correcto: lee el texto si es archivo de
+#      texto; si es binario (PDF/imagen), clasifica por el NOMBRE del archivo
+#   3. imprime el plan de ruteo: agente dueño + puntaje
 #
 # Uso:
 #   bash ATLAS/scripts/inbox-scan.sh           → reporte de lo pendiente
-#   bash ATLAS/scripts/inbox-scan.sh --all     → incluye ya procesados
-# Salida: por item → [puntaje] dominio → sugerencia de acción
+# Salida: por item → agente(s) con mayor similitud + puntaje
 set -e
 cd "$(dirname "$0")/../.."   # raíz del vault
 VAULT_ROOT="$(pwd)"
@@ -25,7 +27,7 @@ echo ""
 
 # archivos nuevos en Inbox/
 LAST_DATE=$(cat "$LAST_SCAN")
-mapfile -t FILES < <(find "$INBOX" -maxdepth 1 -type f \( -name "*.md" -o -name "*.txt" \) ! -name "INBOX.md" -newermt "$LAST_DATE" 2>/dev/null | sort)
+mapfile -t FILES < <(find "$INBOX" -maxdepth 1 -type f ! -name "INBOX.md" ! -name ".DS_Store" -newermt "$LAST_DATE" 2>/dev/null | sort)
 
 if [ "${#FILES[@]}" -eq 0 ]; then
   echo "Inbox vacío o sin archivos nuevos. (nada que procesar)"
@@ -61,15 +63,25 @@ def embed_google(text):
         return None
 
 f = sys.argv[1]
-try:
-    text = open(f, encoding="utf-8").read()
-except Exception:
-    text = ""
-if not text.strip():
-    print("   (vacío — solo metadatos?)")
-    sys.exit(0)
+name_hint = os.path.basename(f)
 
-qv = embed_google(text)
+# intentar leer como texto; si no, clasificar por el nombre del archivo
+text = ""
+TEXTUAL = (".md", ".txt", ".csv", ".json", ".yaml", ".yml", ".url", ".log", ".html")
+if f.lower().endswith(TEXTUAL) or os.path.splitext(f)[1] == "":
+    for enc in ("utf-8", "latin-1"):
+        try:
+            text = open(f, encoding=enc).read()
+            break
+        except Exception:
+            continue
+if not text.strip():
+    # binario (PDF, imagen, docx...) o vacío → el nombre es nuestra mejor pista;
+    # Atlas mirará el contenido directamente al rutear (es multimodal)
+    text = name_hint
+    kind = os.path.splitext(f)[1].lower().lstrip(".")
+    print(f"   (archivo {kind or 'sin extensión'} — pista: nombre; Atlas verá el contenido al rutear)")
+qv = embed_google(text or name_hint)
 if not qv:
     print("   (sin API key — solo inventario, sin clasificación)")
     sys.exit(0)
@@ -123,7 +135,6 @@ for (aname, _), v in zip(all_chunks, vecs):
     scores[aname] = max(scores.get(aname, 0), s)
 top = sorted(scores.items(), key=lambda x: -x[1])[:3]
 print("   agente: " + " | ".join(f"{d} ({s:.2f})" for d, s in top))
-print(f"   dominios: " + " · ".join(f"{d} ({s:.2f})" for d, s in top))
 PYEOF
   done
 fi
@@ -131,7 +142,7 @@ fi
 echo ""
 echo "=== sugerencia de ruteo ==="
 echo "Cada item del Inbox es material para que Atlas lo rutee al agente"
-echo "del dominio con mayor puntaje (ver 'dominios' arriba) y cree el"
+echo "del agente con mayor puntaje (ver 'agente' arriba) y cree el"
 echo "archivo correspondiente en su universo GTD."
 
 # actualizar marca de último scan (solo si fue --all no; siempre al final)

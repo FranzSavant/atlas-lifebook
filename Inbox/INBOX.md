@@ -16,8 +16,10 @@ parent: "[[ATLAS]]"
 
 ## Cómo capturar
 
-**Opción 1 — archivo suelto:** arrastrá o creá un `.md` en esta carpeta con
-lo que sea: una idea, un nombre, un recordatorio, un link, un correo.
+**Opción 1 — archivo suelto (cualquier formato):** arrastrá o soltá en esta
+carpeta lo que sea: `.md`, `.txt`, `.pdf`, `.png`, `.jpg`, `.url`, un correo
+— cualquier tipo de archivo. El scan lo clasifica: lee el texto si puede,
+y si es binario (PDF/imagen) usa el nombre como pista.
 
 **Opción 2 — nota rápida desde Obsidian:** `Ctrl+N` con plantilla
 `ATLAS/GTD/Templates/Inbox.md` (viene con el sistema).
@@ -30,6 +32,9 @@ lo que sea: una idea, un nombre, un recordatorio, un link, un correo.
 1. **Scan**: `bash ATLAS/scripts/inbox-scan.sh` (o la rutina de las 06:00)
    detecta el archivo nuevo y lo **clasifica por semántica**: ¿es de Salud,
    Finanzas, Pareja...? (elige el dominio con mayor similitud).
+   - Archivos de texto → se leen y clasifican por contenido (fuerte).
+   - Imágenes/PDF → el scan da una pista por el nombre, y **Atlas mira el
+     contenido real** (es multimodal) al rutear — nunca adivina solo por el nombre.
 2. **Ruteo**: Atlas crea el archivo real en el universo GTD del agente
    correcto, según su tipo:
    - **Tarea** → `{Area}-GTD/Accionable/Próximas acciones/` o `Flash/` (<2 min)

@@ -1,6 +1,6 @@
 Procesá el Inbox de GTD: ejecuta `bash ATLAS/scripts/inbox-scan.sh` con la herramienta bash.
 
-- Lista los archivos nuevos en `Inbox/` y sugiere el agente dueño por similitud semántica (con puntajes).
+- Lista los archivos nuevos en `Inbox/` (cualquier tipo: .md, .txt, .pdf, .png, .jpg, .url...). El scan clasifica por contenido los de texto; para imágenes/PDF usa el nombre como pista PERO vos mirá el contenido real (sos multimodal) antes de rutear.
 - Ruteá cada item al agente correcto (el de mayor puntaje; si hay empate o todo es bajo (<0.45), preguntale al usuario).
 - Creá el archivo real en el universo GTD del agente según el tipo:
   - Flash (<2 min) → `{Area}-GTD/Accionable/Flash/`
