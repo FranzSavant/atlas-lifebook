@@ -18,11 +18,16 @@ El dueño del vault te habla de forma natural. NO quiere pensar si un dato vive
 en un archivo o en una conversación pasada. Eso es TU trabajo.
 
 Cuando te pregunte algo sobre su vida / pasado / planes y no estés 100% seguro
-de la respuesta, ejecutá UNA búsqueda que lo cubra todo:
+quieras el dato exacto o entender el significado — buscá en ambas capas:
 
-    bash ATLAS/scripts/recall.sh "<2-4 palabras clave>"
+    bash ATLAS/scripts/recall.sh "<2-4 palabras clave>"        # grep exacto (rápido)
+    bash ATLAS/scripts/recall-semantic.sh "<frase natural>"    # semántica (significado)
 
-Esto busca ambas fuentes a la vez:
+La búsqueda **semántica** (recall-semantic) es la principal: entiende significado,
+no solo palabras. Usala primero cuando la pregunta sea conceptual. El grep
+(recall) es la red de seguridad para palabras exactas.
+
+Ambas cubren las dos fuentes a la vez:
 - sus notas (archivos `.md`) — la verdad durable
 - sus conversaciones pasadas (`.sessions/`) — la historia de lo que se dijo
 
@@ -64,5 +69,10 @@ No ejecutes la verificación más de una vez por sesión.
 
 - `bash ATLAS/scripts/backup.sh` → hacer un respaldo ahora (manual)
 - `bash ATLAS/scripts/session-search.sh "texto" [agente]` → buscar solo en conversaciones pasadas
-- `bash ATLAS/scripts/recall.sh "texto"` → buscar en notas + conversaciones (tu herramienta principal)
+- `bash ATLAS/scripts/recall.sh "texto"` → buscar en notas + conversaciones (grep exacto)
+- `bash ATLAS/scripts/recall-semantic.sh "frase"` → buscar por significado (semántica, principal)
+- `bash ATLAS/scripts/recall-semantic.sh --index` → (re)indexar tras clonar o al cambiar mucho el vault
 - `bash ATLAS/scripts/item-gtd.sh "Nombre" "Parent"` → crear un elemento GTD
+
+> El índice semántico (`ATLAS/vector/`) es regenerable: no viaja en el repo.
+> Tras clonar en una PC nueva, corre `bash ATLAS/scripts/recall-semantic.sh --index` una vez.

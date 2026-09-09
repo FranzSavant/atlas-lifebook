@@ -74,4 +74,48 @@ ATLAS/GTD/
 - Dashboard ATLAS que agregue todos los universos (Dataview global)
 
 ---
-*Plan generado 2026-09-07. Filosofía capturada. Listo para ejecutar.*
+
+## 6. Decisiones de sesiones 2026-09-08/09 (ya materializadas)
+
+### 6.1 Arquitectura Statement (público vs privado)
+- Cada especialista tiene `X.md` (identidad de agente, **pública**) y `X-Statement.md`
+  (`privado: true`, voz personal con las preguntas originales del LifeBook Butcher:
+  Premisa → Visión → Misión → Metas → Estrategias → Plan de acción).
+- El agente lee ambos; el público jamás ve el Statement.
+
+### 6.2 Repositorios separados (usuario GitHub: FranzSavant)
+- **Público** `atlas-lifebook`: marca blanca / plantilla congelada. Publicación por
+  manifest whitelist (`publish-public.sh`) — nunca `git add .` del privado.
+- **Privado** `atlas-backup`: origin real del vault, respaldo total.
+- **Regla:** ¿es tu vida? → `/backup`. ¿Es mejora de plantilla/sistema? → `/publicar`.
+- Backup automático diario 21:00 (Task Scheduler Windows → `backup.sh`).
+
+### 6.3 Sesiones archivadas (para la eternidad)
+- `backup.sh` copia las sesiones de Pi a `.sessions/` dentro del vault (git-tracked,
+  viaja al privado), con nombres legibles (Atlas, Axel, Ser, ...) resueltos desde `role.json`.
+- `session-search.sh` / prompt `/recordar` buscan en `.sessions/` — funcionan en PC
+  nueva tras clonar.
+- `recall.sh`: búsqueda unificada del agente en notas + sesiones a la vez (memoria).
+
+### 6.4 Memoria del agente (`AGENTS.md` en la raíz)
+- Se carga al iniciar sesión: el agente busca con `recall.sh` antes de responder,
+  cita la fuente si existe, y dice honestamente "no tengo nada guardado" si no.
+- Verifica `backup-status.sh` al iniciar: si no hay respaldo, ofrece configurarlo
+  (`backup-setup.sh`); si hay OK, no molesta.
+- Scripts genéricos (sin usuario hardcodeado) → funcionan para quien clone.
+
+### 6.5 Inicio minimalista → 12 (flujo 4→12)
+- Bootstrap crea 4 terminales (ATLAS + Ser/Vinculo/Obra). Los 12 especialistas
+  nacen solo si Francisco promueve a maestro y corre `/crear-12` desde ATLAS.
+
+### 6.6 Limpieza Gentle (2026-09-09)
+- Eliminados: Engram, pi-mcp-adapter, pi-web-access, mcp.json.
+- Conservados: gentle-ai.exe, Go 1.27, gentle-pi (persona el Gentleman, skills,
+  orquestador), rpiv-ask-user-question, pi-btw. Skills meta usan espejo `ATLAS/skills/`.
+
+### 6.7 Próximos pasos personales (de Francisco)
+- Completar los 12 `*-Statement.md` con sus respuestas LifeBook privadas.
+- Crear contenido GTD real en los universos.
+
+---
+*Actualizado 2026-09-09. Sistema durable: vida + charlas respaldadas, memoria de agente integrada.*
