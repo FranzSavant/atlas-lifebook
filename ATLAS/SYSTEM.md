@@ -45,5 +45,12 @@ Tú hablas con `SER`, `VINCULO` u `OBRA` y él rutea solo a sus 4. Para trabajo 
 - `descripcion`, `utilidad`, `percepcion` — genera el LLM con óptica del Nivel 2 que lo contiene
 - `tipo`, `nivel`, `parent`, `contiene`, `contexto`, `energia` — fractal clickeable
 
+## 6. Statement — privado por diseño (regla viva)
+- Cada especialista tiene **dos archivos**: `X.md` (identidad del agente, pública) y `X-Statement.md` (la voz de Francisco sobre esa área, **privada**).
+- `X-Statement.md` lleva `privado: true` y las preguntas del LifeBook (Butcher): Premisa, Visión, Misión/Propósito, Metas, Estrategias, Plan de acción.
+- El agente lee ambos: la identidad para saber quién es y el Statement para trabajar con la visión real de Francisco.
+- **Nunca se publica un `*-Statement.md` en el repo público** — el script `publish-public.sh` solo publica lo que está en su manifest, y los Statement quedan fuera por diseño.
+- El repo privado `atlas-backup` es el respaldo completo (backup diario 21:00). El repo público `atlas-lifebook` es la marca blanca: solo identidades, estructura, plantillas y scripts.
+
 ---
 *Regla viva — se actualiza conversando. Ver `AGENTS.md` para fichas de cada agente y `PLAN.md` para historia.*
