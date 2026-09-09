@@ -30,6 +30,7 @@ MANIFEST=(
   "ATLAS/scripts"
   "ATLAS/prompts"
   "ATLAS/skills"
+  "Inbox"
   "ATLAS/GTD"
   "ATLAS/tools"
   "ATLAS/mcp"
