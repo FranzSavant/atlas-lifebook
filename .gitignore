@@ -1,0 +1,26 @@
+# ===== Atlas LifeBook — .gitignore =====
+# Lo local nunca sube; lo configurable (roles, prompts, skills) sí.
+
+# Obsidian: config local del workspace
+.obsidian/
+
+# Pi: dependencias npm instaladas (se regeneran con pi install)
+.pi/agent/npm/
+node_modules/
+
+# Engram: memoria personal (no compartir)
+.engram/
+.atl/
+
+# Maestri: estado de sesión (roles SÍ van, ver abajo)
+.maestri/sessions/
+.maestri/*.log
+
+# Sistémicos
+Thumbs.db
+.DS_Store
+*.tmp
+
+# Backup / runtime
+backup/
+*.bak

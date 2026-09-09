@@ -1,0 +1,1 @@
+Crea un nuevo elemento GTD fractal: ejecuta `bash ATLAS/scripts/item-gtd.sh "Nombre" "Parent"` con la herramienta bash. Nombre es el nuevo contenedor, Parent es donde vive (ej. "Accionable", "No accionable", "Proyectos").
