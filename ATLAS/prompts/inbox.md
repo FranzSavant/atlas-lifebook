@@ -2,6 +2,12 @@ Procesá el Inbox de GTD: ejecuta `bash ATLAS/scripts/inbox-scan.sh` con la herr
 
 - Lista los archivos nuevos en `Inbox/` (cualquier tipo: .md, .txt, .pdf, .png, .jpg, .url...). El scan clasifica por contenido los de texto; para imágenes/PDF usa el nombre como pista PERO vos mirá el contenido real (sos multimodal) antes de rutear.
 - Ruteá cada item al agente correcto (el de mayor puntaje; si hay empate o todo es bajo (<0.45), preguntale al usuario).
+- REGLA DE ORO: nunca inventar títulos ni dar por procesado lo no verificado.
+  - Contenido visto (YouTube/web) → título real del contenido.
+  - Solo texto social → ese texto si es descriptivo.
+  - Nada visto (FB privado) → nota "<tema> - pendiente de ver" con `verificado: no`
+    y línea de estado explicando por qué y cómo completarla. El archivo original
+    se archiva igual; NO preguntes en cadena, marcá el estado y seguí.
 - Creá el archivo real en el universo GTD del agente según el tipo:
   - Flash (<2 min) → `{Area}-GTD/Accionable/Flash/`
   - Próxima acción (>2 min) → `{Area}-GTD/Accionable/Próximas acciones/`

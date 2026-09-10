@@ -32,6 +32,18 @@ for d in "$SESS"/--${SESS_ID}-.maestri-roles-*/; do
 done
 echo "  Sesiones respaldadas: $(find "$SDEST" -name '*.jsonl' | wc -l)"
 
+# 0.5. Esperar si otro git está en curso (evita index.lock)
+LOCK="$VAULT_ROOT/.git/index.lock"
+for _ in 1 2 3 4 5 6; do
+  [ ! -e "$LOCK" ] && break
+  echo "  (otro proceso git en curso — esperando 5s...)"
+  sleep 5
+done
+if [ -e "$LOCK" ]; then
+  echo "  (lock persistente tras 30s — lo elimino y sigo)"
+  rm -f "$LOCK"
+fi
+
 # 1. Traer lo que haya en el remoto (si el repo tiene historial remoto)
 git pull --no-edit --autostash -q origin main 2>/dev/null || echo "  (pull sin cambios o primer backup)"
 

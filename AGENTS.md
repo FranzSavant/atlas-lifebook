@@ -101,9 +101,12 @@ El dueño captura desde cualquier lado:
 - **PC (Obsidian o chat)**: suelta archivos en `Inbox/` o te escribe.
 - **Celular (Telegram)**: le escribe al bot `@franz_savant_inbox_bot`. La
   rutina de 06:00 jala los mensajes a `Inbox/Telegram/` (o manual con `/jalar`).
-  Los links se enriquecen: YouTube con título real, webs/facebook público con
-  contenido leído; si es privado/restringido queda marcado y le preguntás al
-  dueño qué es (él lo guardó, él sabe).
+  Los links se enriquecen en cadena: oEmbed (YouTube) → Jina (web pública) →
+  fb-peek (Facebook privado con la sesión del dueño en el perfil Chrome
+  AtlasAgent).
+  ESTÁNDAR DE VIDEOS: todo video de Facebook recibe tratamiento completo
+  (audio descargado + transcripción con `reel_transcribe.py`), nunca solo título. Si FB dice que el contenido fue eliminado, la nota lo marca
+  (DELETED) en vez de inventar un título. Login único: atlas-login.cmd.
 
 El dueño captura SIN pensar: suelta archivos en `Inbox/` (notas rápidas,
 ideas, links, recordatorios) o le escribe al bot de Telegram. Vos hacés la parte inteligente:
@@ -113,6 +116,20 @@ ideas, links, recordatorios) o le escribe al bot de Telegram. Vos hacés la part
    dueño por similitud semántica (con puntajes).
 2. **Ruteá cada item**: elegí el agente con mayor puntaje. Si hay empate o
    todos los puntajes son bajos (< 0.45), preguntale al dueño — nunca inventes.
+2.5 **Regla de oro del contenido (NUNCA inventar):**
+   - Si el sistema pudo ver el contenido real (YouTube: título+descripción, web
+     pública: texto leído), usá ESE título real para la nota.
+   - Si solo hay texto social de la publicación, ese texto ES el título si es
+     descriptivo (ej. "8 negocios = 8 Dashboards").
+   - Si NO se pudo ver nada del contenido, la nota se llama "<tema> - pendiente
+     de ver", lleva `verificado: no` en el frontmatter y una línea de estado
+     explicando que el contenido no se pudo leer (ej. FB sin login) y qué hacer
+     para completarla. JAMÁS un título genérico tipo "Video compartido".
+   - NUNCA dar por procesada una nota cuyo contenido no se vio. Procesar
+     significa: la nota es ÚTIL. si no, no es proceso, es relleno.
+   - No preguntar en cadena: procesá con lo que haya, marcá el estado, y la
+     completitud queda en la nota (el dueño la completa cuando quiera).
+
 3. **Creá el archivo real** en el universo GTD del agente según el tipo:
    - Tarea (<2 min) → `{G}.GTD/Accionable/Flash/`
    - Tarea (>2 min) → `{G}.GTD/Accionable/Próximas acciones/`
@@ -141,6 +158,7 @@ solo lo que quedó a la espera de una decisión del dueño, avisado).
 - `bash ATLAS/scripts/item-gtd.sh "Nombre" "Parent"` → crear un elemento GTD
 - `bash ATLAS/scripts/inbox-scan.sh` → revisar el Inbox y rutear (o `/inbox`)
 - `bash ATLAS/scripts/telegram-pull.sh` → jalar mensajes del bot de Telegram (o `/jalar`)
+- `bash ATLAS/scripts/python/reel_transcribe.py URL` → descarga y transcribe un REEL de Facebook (receta completa). Ojo: los shares de perfil suelen expirar; el link DIRECTO del reel (facebook.com/reel/ID) siempre funciona con la sesión del dueño.
 
 > El índice semántico (`ATLAS/vector/`) es regenerable: no viaja en el repo.
 > Tras clonar en una PC nueva, corre `bash ATLAS/scripts/recall-semantic.sh --index` una vez.

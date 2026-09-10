@@ -75,7 +75,8 @@ def jina_read(url):
         return False, str(e)[:150]
 
 def enrich_link(url):
-    """Devuelve (title, content) para un link. El LLM ve de verdad."""
+    """Devuelve (title, content) para un link. El LLM ve de verdad.
+    Cadena: oEmbed (YouTube) → Jina (web pública) → fb-peek (FB privado con tu sesión)."""
     title = oembed_title(url)
     if title:
         return title, ""
@@ -85,6 +86,22 @@ def enrich_link(url):
         t = m.group(1).strip() if m else ""
         cleaned = re.sub(r"\n{3,}", "\n\n", content)[:3000]
         return t, cleaned
+    # Facebook privado: usar el perfil Atlas-Agent (sesion del dueno en Chrome)
+    if "facebook.com" in url:
+        import subprocess
+        p = subprocess.run(
+            [sys.executable, os.path.join(os.path.dirname(__file__), "fb-peek.py"), url],
+            capture_output=True, text=True, timeout=120)
+        out = p.stdout.strip()
+        if out.startswith("TITLE:"):
+            lines = out.splitlines()
+            t = lines[0][6:].strip()
+            rest = "\n".join(l[5:].strip() for l in lines[1:] if l.startswith("DESC:"))
+            return t, rest
+        if out.startswith("DELETED"):
+            return "", "[ELIMINADO: el contenido ya no existe en Facebook]"
+        if out.startswith("LOGIN_REQUIRED"):
+            return "", "[FB PRIVADO: logueate una vez con atlas-login.cmd para que el sistema pueda leerlo]"
     return "", "[PRIVADO/RESTRINGIDO: el contenido no es publico - preguntar al dueno que es]"
 
 def safe_name(text, maxlen=60):
