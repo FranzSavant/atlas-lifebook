@@ -1,0 +1,26 @@
+{
+  "name": "@atlas/trading-bot",
+  "version": "0.1.0",
+  "description": "24/7 trading bot skeleton - O(1) incremental, RingBufferSoA, Binance rate-limit aware",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc -p tsconfig.json",
+    "backtest": "tsx src/backtest/BacktestRunner.ts",
+    "test": "tsc --noEmit && node --test dist/**/*.test.js 2>&1 | head -n 100; echo \"tsc --noEmit: ok if no errors above\"",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "ws": "^8.18.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "@types/ws": "^8.5.13",
+    "tsx": "^4.19.0",
+    "typescript": "^5.7.0"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

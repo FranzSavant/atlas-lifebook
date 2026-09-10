@@ -71,6 +71,83 @@ bash ATLAS/scripts/recall.sh "texto"  # buscar en notas + conversaciones
 | `ATLAS/scripts/sync-agents.sh` | Sincroniza roles Maestri ⇄ subagentes Pi (el más nuevo gana) |
 | `ATLAS/scripts/daily.sh` | Rutina 06:00: skills + agentes + backup GitHub |
 
+---
+
+## FAQ — Preguntas frecuentes
+
+### ¿Cómo hago que mi agente lea los videos de Facebook que comparto?
+
+1. Instala yt-dlp: `pip install yt-dlp`
+2. Ejecutá `atlas-login.cmd` — abre Chrome con un perfil dedicado (AtlasAgent).
+   **Logueate en Facebook una sola vez** en esa ventana y cerrala.
+3. Listo. Cada vez que llegue el link de un video, el sistema descarga el audio
+   y lo transcribe completo:
+
+```bash
+python ATLAS/scripts/python/reel_transcribe.py "https://www.facebook.com/reel/ID"
+```
+
+> **¿Por qué me pide login?** Facebook no deja leer videos privados sin sesión.
+> El sistema usa tu propio Chrome (perfil AtlasAgent) como "vos" — silencioso y local.
+
+### ¿Cómo creo el bot de Telegram para capturar desde el celular?
+
+1. En Telegram, buscá `@BotFather` → `/newbot` → seguí los pasos → te da un token.
+2. Guardá el token como variable de entorno:
+
+```bash
+setx TELEGRAM_BOT_TOKEN "tu_token"
+```
+
+3. Cualquier mensaje o link que le envíes al bot llega a `Inbox/Telegram/`:
+
+```bash
+bash ATLAS/scripts/telegram-pull.sh   # jala lo nuevo + limpia lo procesado
+```
+
+> El bot borra automáticamente los mensajes ya procesados. Para links de
+> **páginas públicas** basta el share normal; para **perfiles privados** usá el
+> link directo del reel (`facebook.com/reel/ID`): los shares de perfil expiran.
+
+### ¿Cómo activo la búsqueda semántica (por significado)?
+
+```bash
+setx GEMINI_API_KEY "tu_key_de_google_ai_studio"   # gratis en aistudio.google.com
+bash ATLAS/scripts/recall-semantic.sh --full         # construye el índice (una vez)
+bash ATLAS/scripts/recall-semantic.sh "tu pregunta natural"
+```
+
+### ¿Cómo me respaldo en GitHub?
+
+```bash
+bash ATLAS/scripts/backup-setup.sh   # te guía: repo privado + primer push
+bash ATLAS/scripts/backup.sh         # respaldo manual (notas + sesiones)
+```
+
+O dejá que la rutina diaria lo haga (`daily.sh`), programada a las 06:00.
+
+### ¿Los shares de Facebook que mando a veces dicen "eliminado"?
+
+Sí — y no es un error tuyo. Los links `share/r/...` de perfil expiran o el
+contenido se borra. El sistema lo detecta y lo marca honestamente en la nota
+(`DELETED`). La regla de oro: **link directo del reel** (`reel/ID`) siempre
+funciona; **share de perfil** muere; **share de página pública** casi siempre funciona.
+
+### ¿Mis datos van a algún lado?
+
+- Tu vida (notas + sesiones) → solo a tu repo **privado** (el que configures).
+- El repo público de la plantilla **jamás** recibe contenido personal.
+- La transcripción de videos usa Google Gemini: solo el audio del video que vos
+  mandaste, nunca tus notas.
+- Tu sesión de Facebook vive en tu disco local (perfil AtlasAgent).
+
+### ¿Necesito saber programar?
+
+No. Todo se dispara con frases al agente (`/jalar`, `/inbox`, `/backup`,
+`/recordar`, `/indexar`) o con doble clic en scripts. Si algo falla, el sistema
+lo dice claro — y este vault es tuyo: podés preguntarle al agente cómo funciona
+cualquier parte.
+
 ## Licencia
 
 MIT — usa, cambia y comparte.
